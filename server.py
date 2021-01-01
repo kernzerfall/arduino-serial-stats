@@ -15,7 +15,7 @@ data = [
 
 ser = None
 
-def getSerialDevice():
+def getSerialDevice() -> Serial:
     try:
         if os.name == 'nt':
             return Serial('COM4',9600)
@@ -26,7 +26,7 @@ def getSerialDevice():
         return None
 
 
-def loop(ser):
+def loop(ser) -> None:
     while True:
         try:
             u = datetime.datetime.now()
