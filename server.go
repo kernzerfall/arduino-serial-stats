@@ -75,7 +75,6 @@ func getSerialPort() (port serial.Port, err error) {
 }
 
 func main() {
-
 	port, err := getSerialPort()
 	if err != nil {
 		log.Fatal(err)
@@ -93,13 +92,4 @@ func main() {
 		}
 		time.Sleep(time.Second)
 	}
-
-	//for true {
-	//	data, err := getData()
-	//	if err != nil {
-	//		continue
-	//	}
-	//	fmt.Println(data)
-	//	time.Sleep(time.Second)
-	//}
 }
