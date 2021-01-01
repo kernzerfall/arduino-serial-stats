@@ -7,7 +7,9 @@
                 "C:/arduino/libraries/**",
                 "C:/arduino/hardware/tools/**",
                 "C:/arduino/hardware/arduino/avr/**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:\\arduino\\hardware\\arduino\\avr\\**",
+                "C:\\arduino\\tools\\**"
             ],
             "defines": [
                 "USBCON"
@@ -16,7 +18,8 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
             "forcedInclude": [
-                "C:/arduino/hardware/arduino/avr/cores/arduino/Arduino.h"
+                "C:/arduino/hardware/arduino/avr/cores/arduino/Arduino.h",
+                "C:\\arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ]
         },
         {

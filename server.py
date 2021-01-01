@@ -4,6 +4,17 @@ import psutil
 import datetime
 import os
 
+data = [
+    0x00, # Hour
+    0x00, # Minute
+    0x00, # Day
+    0x00, # Month
+    0x00, # CPU%
+    0x00  # RAM%
+]
+
+ser = None
+
 def getSerialDevice():
     try:
         if os.name == 'nt':
@@ -26,6 +37,7 @@ def loop(ser):
             data[4] = int(psutil.cpu_percent())
             data[5] = int(psutil.virtual_memory().percent)
             ser.write(bytes(data))
+            print(data)
             time.sleep(1)
         except:
             ser = getSerialDevice()
@@ -36,11 +48,10 @@ def loop(ser):
                 break
     quit(0)
 
-data = [0,0,0,0,0,0]
-
-ser = getSerialDevice()
-if ser!=None:
-    time.sleep(5)
-    loop(ser)
-else:
-    quit(0)
+if __name__ == "__main__":
+    ser = getSerialDevice()
+    if ser!=None:
+        time.sleep(5)
+        loop(ser)
+    else:
+        quit(0)
