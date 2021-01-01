@@ -13,6 +13,10 @@ import (
 	"go.bug.st/serial/enumerator"
 )
 
+const (
+	dataPacketLength = 6
+)
+
 func findArduino() (arduino *enumerator.PortDetails, err error) {
 	ports, err := enumerator.GetDetailedPortsList()
 	if err != nil {
@@ -37,14 +41,15 @@ func findArduino() (arduino *enumerator.PortDetails, err error) {
 }
 
 func getData() (data []byte, err error) {
-	data = make([]byte, 6)
+	data = make([]byte, dataPacketLength)
 	err = nil
 	dt := time.Now()
 	data[0] = uint8(dt.Hour())
 	data[1] = uint8(dt.Minute())
 	data[2] = uint8(dt.Day())
 	data[3] = uint8(dt.Month())
-	cpuU, u := cpu.Percent(0, false)
+	// IMPORTANT: This sets the interval between cycles
+	cpuU, u := cpu.Percent(time.Second, false)
 	if u != nil {
 		err = u
 	}
@@ -97,6 +102,7 @@ func main() {
 		if errCounter > 3 {
 			log.Fatal("Communication with Arduino failed 3 times in a row")
 		}
-		time.Sleep(time.Second)
+		// cpu.Percent is used as a timer in getData()
+		// time.Sleep(time.Second)
 	}
 }
