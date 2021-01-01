@@ -80,15 +80,22 @@ func main() {
 		log.Fatal(err)
 	}
 	time.Sleep(5 * time.Second)
+	errCounter := uint8(0)
 	for {
 		data, err := getData()
 		if err != nil {
-			fmt.Println("Couldn't get System Data")
+			log.Fatal("Couldn't get System Data")
 		}
 		fmt.Println(data)
 		_, err = port.Write(data)
 		if err != nil {
 			fmt.Println("Couldn't send message to Arduino")
+			errCounter++
+		} else {
+			errCounter = 0
+		}
+		if errCounter > 3 {
+			log.Fatal("Communication with Arduino failed 3 times in a row")
 		}
 		time.Sleep(time.Second)
 	}
