@@ -1,0 +1,1 @@
+Start-Process ".\server.exe" -WindowStyle hidden
