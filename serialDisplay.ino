@@ -2,34 +2,15 @@
 
 #define REDRAW_INTERVAL             600000
 #define DISPLAY_UPDATE_INTERVAL     100
-#define ANIMATION_UPDATE_INTEVAL    500
+#define TEMPERATURE_READ_INTERVAL   5000
 #define SERIAL_DATA_PACKET_LENGTH   6
 
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
 byte serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
-unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastAnimationUpdateMillis = 0, currentMillis = 0;
+float temperatureReading = 0.0f;
+unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
 
-//bool animationState = 0;
-//byte animationFrame1[] = {
-//    B00000,
-//    B10000,
-//    B10100,
-//    B00000,
-//    B00101,
-//    B00001,
-//    B00000,
-//    B00000
-//}, animationFrame2[] = {
-//    B00000,
-//    B00000,
-//    B01010,
-//    B00100,
-//    B01010,
-//    B10001,
-//    B00000,
-//    B00000
-//};
 
 // Blanks num blocks starting at col, row and returns the cursor to col, row
 void lBlank(uint8_t col, uint8_t row, uint8_t num){
@@ -46,8 +27,6 @@ void redrawUI(){
     lcd.print("CPU");
     lcd.setCursor(8, 0);
     lcd.print("RAM");
-    //lcd.createChar(0,animationFrame1);
-    //lcd.createChar(1,animationFrame2);
 }
 
 void setup(){
@@ -58,6 +37,9 @@ void setup(){
     lcd.begin(16,2);
     delay(1000);
     redrawUI();
+
+    // Temperature sensor
+    pinMode(A0,INPUT);
 }
 
 void loop(){
@@ -112,7 +94,6 @@ void loop(){
         if(temp<10)
             lcd.print("0");
         lcd.print(temp);
-        lcd.print(".");
 
         // Blank CPU% Range
         lBlank(4, 0, 4);
@@ -125,12 +106,18 @@ void loop(){
         // Write RAM%
         lcd.print((uint8_t)serial[5]);
         lcd.print("%");
+
+        // Blank TEMP Range
+        lBlank(12,1,4);
+        lcd.print(temperatureReading);
     }
 
-    //if(currentMillis - lastAnimationUpdateMillis > ANIMATION_UPDATE_INTEVAL){
-    //    lastAnimationUpdateMillis = currentMillis;
-    //    animationState = !animationState;
-    //    lcd.setCursor(15,1);
-    //    lcd.write((byte)animationState);
-    //}
+    if(currentMillis - lastTemperatureReadMillis > TEMPERATURE_READ_INTERVAL){
+        lastTemperatureReadMillis = currentMillis;
+        float temp = analogRead(A0);
+        temp = temp * 0.48828125f;
+        temp = floor(temp * 10.0f + 0.5f) / 10.0f;
+        if ( temp > -10 && temp < 60) 
+            temperatureReading = temp;
+    }
 }
