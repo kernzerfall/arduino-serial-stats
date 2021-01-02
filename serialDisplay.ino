@@ -3,14 +3,13 @@
 #define REDRAW_INTERVAL             600000
 #define DISPLAY_UPDATE_INTERVAL     100
 #define TEMP_UPDATE_INTERVAL        100
-#define TEMP_DISPLAY_INTERVAL       5000
 #define SERIAL_DATA_PACKET_LENGTH   6
 
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
 byte serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
 float temperatureReading = 0.0f, temperatureN = 0.0f;
-unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, lastTemperatureDisplayMillis = 0, currentMillis = 0;
+unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
 
 
 // Blanks num blocks starting at col, row and returns the cursor to col, row
@@ -115,14 +114,10 @@ void loop(){
         temp = temp * 0.437528f;
         if ( temp > -10 && temp < 60) 
             temperatureReading += temp;
-            temperatureN++;
-    }
-    if(currentMillis -lastTemperatureDisplayMillis > TEMP_DISPLAY_INTERVAL && currentMillis > 10000){
-        lastTemperatureDisplayMillis = currentMillis;
-        // Blank TEMP Range
-        lBlank(12,1,4);
-        // Get average
-        if(temperatureN != 0.0f){
+        
+        if (temperatureN++>=100){
+            // Blank TEMP Range
+            lBlank(12,1,4);
             float temp = temperatureReading/temperatureN;
             // Round to 1st digit after floating point
             temp = floor(temp*10.0f + 0.5f) / 10.0f;
