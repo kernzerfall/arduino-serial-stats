@@ -31,7 +31,6 @@ void drawBaseElements(){
 
 void setup(){
     Serial.begin(9600);
-    Serial.println("Boot");
     memset(&serial, 0, SERIAL_DATA_PACKET_LENGTH);
     delay(1000);
     lcd.begin(16,2);
