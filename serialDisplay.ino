@@ -2,14 +2,15 @@
 
 #define REDRAW_INTERVAL             600000
 #define DISPLAY_UPDATE_INTERVAL     100
-#define TEMPERATURE_READ_INTERVAL   5000
+#define TEMP_UPDATE_INTERVAL        100
+#define TEMP_DISPLAY_INTERVAL       5000
 #define SERIAL_DATA_PACKET_LENGTH   6
 
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
 byte serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
-float temperatureReading = 0.0f;
-unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
+float temperatureReading = 0.0f, temperatureN = 0.0f;
+unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, lastTemperatureDisplayMillis = 0, currentMillis = 0;
 
 
 // Blanks num blocks starting at col, row and returns the cursor to col, row
@@ -21,7 +22,7 @@ void lBlank(uint8_t col, uint8_t row, uint8_t num){
     lcd.setCursor(col,row);
 }
 
-void redrawUI(){
+void drawBaseElements(){
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("CPU");
@@ -36,7 +37,7 @@ void setup(){
     delay(1000);
     lcd.begin(16,2);
     delay(1000);
-    redrawUI();
+    drawBaseElements();
 
     // Temperature sensor
     pinMode(A0,INPUT);
@@ -47,7 +48,7 @@ void loop(){
     currentMillis = millis();
     if(currentMillis - lastRedrawMillis > REDRAW_INTERVAL){
         lastRedrawMillis = currentMillis;
-        redrawUI();
+        drawBaseElements();
     }
 
     // Data packets should always be SERIAL_DATA_PACKET_LENGTH long
@@ -106,18 +107,31 @@ void loop(){
         // Write RAM%
         lcd.print((uint8_t)serial[5]);
         lcd.print("%");
-
-        // Blank TEMP Range
-        lBlank(12,1,4);
-        lcd.print(temperatureReading);
     }
 
-    if(currentMillis - lastTemperatureReadMillis > TEMPERATURE_READ_INTERVAL){
+    if(currentMillis - lastTemperatureReadMillis > TEMP_UPDATE_INTERVAL){
         lastTemperatureReadMillis = currentMillis;
         float temp = analogRead(A0);
-        temp = temp * 0.48828125f;
-        temp = floor(temp * 10.0f + 0.5f) / 10.0f;
+        temp = temp * 0.437528f;
         if ( temp > -10 && temp < 60) 
-            temperatureReading = temp;
+            temperatureReading += temp;
+            temperatureN++;
+    }
+    if(currentMillis -lastTemperatureDisplayMillis > TEMP_DISPLAY_INTERVAL && currentMillis > 10000){
+        lastTemperatureDisplayMillis = currentMillis;
+        // Blank TEMP Range
+        lBlank(12,1,4);
+        // Get average
+        if(temperatureN != 0.0f){
+            float temp = temperatureReading/temperatureN;
+            // Round to 1st digit after floating point
+            temp = floor(temp*10.0f + 0.5f) / 10.0f;
+            // Print temp
+            lcd.print(temp);
+            // Reset Counter
+            temperatureN = 0;
+            // Reset temperatureReading
+            temperatureReading = 0;
+        }
     }
 }
