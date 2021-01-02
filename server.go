@@ -40,7 +40,7 @@ func findArduino() (arduino *enumerator.PortDetails, err error) {
 	return
 }
 
-func getData() (data []byte, err error) {
+func buildDataPacket() (data []byte, err error) {
 	data = make([]byte, dataPacketLength)
 	err = nil
 	dt := time.Now()
@@ -87,7 +87,7 @@ func main() {
 	time.Sleep(5 * time.Second)
 	errCounter := uint8(0)
 	for {
-		data, err := getData()
+		data, err := buildDataPacket()
 		if err != nil {
 			log.Fatal("Couldn't get System Data")
 		}
@@ -102,7 +102,7 @@ func main() {
 		if errCounter > 3 {
 			log.Fatal("Communication with Arduino failed 3 times in a row")
 		}
-		// cpu.Percent is used as a timer in getData()
+		// cpu.Percent is used as a timer in buildDataPacket()
 		// time.Sleep(time.Second)
 	}
 }
