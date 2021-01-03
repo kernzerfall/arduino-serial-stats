@@ -111,8 +111,14 @@ void loop(){
         lastTemperatureReadMillis = currentMillis;
         float temp = analogRead(A0);
         temp = temp * 0.437528f;
-        if ( temp > -10 && temp < 60) 
+        if ( temp > -10 && temp < 60 ) 
             temperatureReading += temp;
+        else { // if we don't read a valid temp, report immediately that the sersor is kaputt
+            // Blank TEMP Range
+            lBlank(12,1,4);
+            // Write Na
+            lcd.print("N/A");
+        }
         
         if (temperatureN++>=100){
             // Blank TEMP Range
