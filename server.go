@@ -17,6 +17,7 @@ const (
 	dataPacketLength = 6
 )
 
+// findArduino enumerates the serial ports, finds the first Arduino and returns its PortDetails
 func findArduino() (arduino *enumerator.PortDetails, err error) {
 	ports, err := enumerator.GetDetailedPortsList()
 	if err != nil {
@@ -36,11 +37,13 @@ func findArduino() (arduino *enumerator.PortDetails, err error) {
 		}
 	}
 	arduino = nil
-	err = errors.New("Something went wrong")
+	err = errors.New("Something went wrong / Arduino not found")
 	return
 }
 
+// buildDataPacket gets the current date & time, and queries psutil for the computer's stats
 func buildDataPacket() (data []byte, err error) {
+	// Data format = [hour, minute, day, month, cpu%, gpu%]
 	data = make([]byte, dataPacketLength)
 	err = nil
 	dt := time.Now()
@@ -49,41 +52,46 @@ func buildDataPacket() (data []byte, err error) {
 	data[2] = uint8(dt.Day())
 	data[3] = uint8(dt.Month())
 	// IMPORTANT: This sets the interval between cycles
-	cpuU, u := cpu.Percent(time.Second, false)
+	// get CPU Utilization %
+	cpuU, u := cpu.Percent(time.Second, false) // percpu is set to false; we only get a single value
 	if u != nil {
 		err = u
 	}
+	// from cpuU, get the first value
 	data[4] = uint8(cpuU[0])
+	// get RAM Utilization stats
 	vMem, u := mem.VirtualMemory()
 	if u != nil {
 		err = u
 	}
+	// We care only about used ram %
 	data[5] = uint8(vMem.UsedPercent)
 	return
 }
 
-func getSerialPort() (port serial.Port, err error) {
-	arduinoPort, err := findArduino()
-	if err != nil {
-		arduinoPort = nil
-		return
-	}
+// getSerialPort opens a serial port and returs it as serialObj
+func getSerialPort(port *enumerator.PortDetails) (serialObj serial.Port, err error) {
 	mode := &serial.Mode{
 		BaudRate: 9600,
 	}
-	port, err = serial.Open(arduinoPort.Name, mode)
+	serialObj, err = serial.Open(port.Name, mode)
 	if err != nil {
-		arduinoPort = nil
+		serialObj = nil
 		return
 	}
 	return
 }
 
 func main() {
-	port, err := getSerialPort()
+	arduino, err := findArduino()
 	if err != nil {
 		log.Fatal(err)
 	}
+	port, err := getSerialPort(arduino)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer port.Close()
 	time.Sleep(5 * time.Second)
 	errCounter := uint8(0)
 	for {
