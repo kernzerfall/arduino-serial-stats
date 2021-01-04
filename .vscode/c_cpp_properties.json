@@ -9,7 +9,12 @@
                 "C:/arduino/hardware/arduino/avr/**",
                 "${workspaceFolder}/**",
                 "C:\\arduino\\hardware\\arduino\\avr\\**",
-                "C:\\arduino\\tools\\**"
+                "C:\\arduino\\tools\\**",
+                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/arduino/avr/**",
+                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/tools/**",
+                "/home/kernzerfall/Desktop/arduino-1.8.13/libraries/**",
+                "/home/kernzerfall/Arduino/libraries/**",
+                "/home/kernzerfall/Desktop/arduino-1.8.13/tools/**"
             ],
             "defines": [
                 "USBCON"
@@ -19,7 +24,8 @@
             "intelliSenseMode": "clang-x64",
             "forcedInclude": [
                 "C:/arduino/hardware/arduino/avr/cores/arduino/Arduino.h",
-                "C:\\arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
+                "C:\\arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
+                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Arduino.h"
             ]
         },
         {

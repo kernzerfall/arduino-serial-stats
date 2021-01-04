@@ -1,45 +1,18 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
+	"./serialport"
 	"github.com/shirou/gopsutil/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
-	"go.bug.st/serial"
-	"go.bug.st/serial/enumerator"
 )
 
 const (
 	dataPacketLength = 6
 )
-
-// findArduino enumerates the serial ports, finds the first Arduino and returns its PortDetails
-func findArduino() (arduino *enumerator.PortDetails, err error) {
-	ports, err := enumerator.GetDetailedPortsList()
-	if err != nil {
-		arduino = nil
-		return
-	}
-	if len(ports) == 0 {
-		err = errors.New("No serial ports found")
-		arduino = nil
-		return
-	}
-	for _, port := range ports {
-		if port.IsUSB && strings.Contains(port.Product, "Arduino") {
-			fmt.Printf("Found %v\n", port.Product)
-			arduino = port
-			return
-		}
-	}
-	arduino = nil
-	err = errors.New("Something went wrong / Arduino not found")
-	return
-}
 
 // buildDataPacket gets the current date & time, and queries psutil for the computer's stats
 func buildDataPacket() (data []byte, err error) {
@@ -69,25 +42,8 @@ func buildDataPacket() (data []byte, err error) {
 	return
 }
 
-// getSerialPort opens a serial port and returs it as serialObj
-func getSerialPort(port *enumerator.PortDetails) (serialObj serial.Port, err error) {
-	mode := &serial.Mode{
-		BaudRate: 9600,
-	}
-	serialObj, err = serial.Open(port.Name, mode)
-	if err != nil {
-		serialObj = nil
-		return
-	}
-	return
-}
-
 func main() {
-	arduino, err := findArduino()
-	if err != nil {
-		log.Fatal(err)
-	}
-	port, err := getSerialPort(arduino)
+	port, err := serialport.GetSerialPort()
 	if err != nil {
 		log.Fatal(err)
 	}
