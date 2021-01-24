@@ -36,7 +36,7 @@ func findArduino() (arduino *enumerator.PortDetails, err error) {
 	return
 }
 
-// getSerialPort opens a serial port and returs it as serialObj
+// GetSerialPort opens a serial port and returs it as serialObj
 func GetSerialPort() (serialObj serial.Port, err error) {
 	arduino, err := findArduino()
 	if err != nil {
@@ -45,7 +45,7 @@ func GetSerialPort() (serialObj serial.Port, err error) {
 	mode := &serial.Mode{
 		BaudRate: 9600,
 	}
-	serialObj, err = serial.Open(port.Name, mode)
+	serialObj, err = serial.Open(arduino.Name, mode)
 	if err != nil {
 		serialObj = nil
 		return
