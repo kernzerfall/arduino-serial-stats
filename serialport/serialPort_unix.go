@@ -1,4 +1,4 @@
-// build +unix
+// +build unix, linux
 
 package serialport
 
