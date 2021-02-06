@@ -3,12 +3,14 @@
 #define REDRAW_INTERVAL             600000
 #define DISPLAY_UPDATE_INTERVAL     100
 #define TEMP_UPDATE_INTERVAL        100
+#define TEMP_AVERAGE_COUNT          500       
 #define SERIAL_DATA_PACKET_LENGTH   6
 
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
 byte serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
-float temperatureReading = 0.0f, temperatureN = 0.0f;
+float temperatureReading = 0.0f;
+unsigned short temperatureN = 0;
 unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
 
 
@@ -110,7 +112,6 @@ void loop(){
     if(currentMillis - lastTemperatureReadMillis > TEMP_UPDATE_INTERVAL){
         lastTemperatureReadMillis = currentMillis;
         float temp = analogRead(A0);
-        temp = temp * 0.437528f;
         if ( temp > -10 && temp < 60 ) 
             temperatureReading += temp;
         else { // if we don't read a valid temp, report immediately that the sersor is kaputt
@@ -120,10 +121,10 @@ void loop(){
             lcd.print("N/A");
         }
         
-        if (temperatureN++>=100){
+        if (temperatureN++ >= TEMP_AVERAGE_COUNT){
             // Blank TEMP Range
             lBlank(12,1,4);
-            float temp = temperatureReading/temperatureN;
+            float temp = temperatureReading * 0.437528f / temperatureN;
             // Round to 1st digit after floating point
             temp = floor(temp*10.0f + 0.5f) / 10.0f;
             // Print temp
