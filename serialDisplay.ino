@@ -112,7 +112,7 @@ void loop(){
     if(currentMillis - lastTemperatureReadMillis > TEMP_UPDATE_INTERVAL){
         lastTemperatureReadMillis = currentMillis;
         float temp = analogRead(A0);
-        if ( temp > -10 && temp < 60 ) 
+        if ( temp > 0 && temp < 140 ) 
             temperatureReading += temp;
         else { // if we don't read a valid temp, report immediately that the sersor is kaputt
             // Blank TEMP Range
