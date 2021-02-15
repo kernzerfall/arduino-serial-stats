@@ -3,15 +3,15 @@
 #define REDRAW_INTERVAL             600000
 #define DISPLAY_UPDATE_INTERVAL     100
 #define TEMP_UPDATE_INTERVAL        100
-#define TEMP_AVERAGE_COUNT          500       
+#define TEMP_AVERAGE_COUNT          100       
 #define SERIAL_DATA_PACKET_LENGTH   6
 
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
-byte serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
+uint8_t serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
 float temperatureReading = 0.0f;
-unsigned short temperatureN = 0;
-unsigned long lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
+uint16_t temperatureN = 0;
+uint64_t lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
 
 
 // Blanks num blocks starting at col, row and returns the cursor to col, row
@@ -73,14 +73,14 @@ void loop(){
 
         // ==== MINS ==== //
         // Cursor should already be after the separator
-        temp = (uint8_t)serial[1];
+        temp = serial[1];
         // If mins < 10, add preceding zero
         if(temp<10)
             lcd.print(0);
         lcd.print(temp);
 
         // ==== DAY ==== //
-        temp = (uint8_t)serial[2];
+        temp = serial[2];
         lcd.setCursor(6, 1);
         // If day < 10, add preceding zero
         if(temp<10)
@@ -90,7 +90,7 @@ void loop(){
 
         // ==== MONTH ==== //
         // Cursor should already be after the separator
-        temp = (uint8_t)serial[3];
+        temp = serial[3];
         // If month < 10, add preceding zero
         if(temp<10)
             lcd.print("0");
@@ -99,13 +99,13 @@ void loop(){
         // Blank CPU% Range
         lBlank(4, 0, 4);
         // Write CPU%
-        lcd.print((uint8_t)serial[4]);
+        lcd.print(serial[4]);
         lcd.print("%");
 
         // Blank RAM% Range
         lBlank(12,0,4);
         // Write RAM%
-        lcd.print((uint8_t)serial[5]);
+        lcd.print(serial[5]);
         lcd.print("%");
     }
 
