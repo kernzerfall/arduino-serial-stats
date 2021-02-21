@@ -36,7 +36,7 @@ func buildDataPacket() (data []byte, err error) {
 	data[8] = dataCPUtil
 	// IMPORTANT: This sets the interval between cycles
 	// get CPU Utilization %
-	cpuU, u := cpu.Percent(time.Millisecond*500, false) // percpu is set to false; we only get a single value
+	cpuU, u := cpu.Percent(time.Second, false) // percpu is set to false; we only get a single value
 	if u != nil {
 		err = u
 	}

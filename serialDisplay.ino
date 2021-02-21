@@ -29,9 +29,9 @@ class StateKeeper {
         } temp;
 
         void resetBuf(){
-            for(u16 i = 0; i < SerialConstant::Data::SIZE_SERIALBUF; i++) s.buf[i] = 0x00;
-            s.bIndex = 0x00;
-            s.state  = SerialConstant::State::IDLE;
+            for(u16 i = 0; i < SerialConstant::Data::SIZE_SERIALBUF; i++) this->buf[i] = 0x00;
+            this->bIndex = 0x00;
+            this->state  = SerialConstant::State::IDLE;
         }
 } s;
 
@@ -166,7 +166,7 @@ void loop(){
                 s.resetBuf();
                 break;;
 
-            case SerialConstant::Flag::HALT:
+            case SerialConstant::State::HALT:
                 // Reset the device via software (send HALT byte)
                 resetDevice();
                 break;;

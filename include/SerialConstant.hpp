@@ -1,3 +1,4 @@
+#pragma once
 class SerialConstant {
     public:
         enum State : byte {
@@ -9,8 +10,6 @@ class SerialConstant {
 
             DATA_START      = 0b10000001, // 0x01 | NS
             DATA_END        = 0b11111111, // 0x7F | NS
-
-            HALT            = 0b11111110, // 0x7E | NS
         };
 
         enum Data : byte {

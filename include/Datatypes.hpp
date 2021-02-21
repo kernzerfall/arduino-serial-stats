@@ -1,3 +1,5 @@
+#pragma once
+
 using byte = unsigned char;
 using u64  = unsigned long long;
 using s64  = signed long long;
