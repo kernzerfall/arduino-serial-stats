@@ -2,8 +2,8 @@
 class SerialConstant {
     public:
         enum State : byte {
-                IDLE            = 0b11110000, // 0xF0
-                HALT            = 0b11111110, // 0xFE
+                IDLE        = 0b11110000, // 0xF0
+                HALT        = 0b11111110, // 0xFE
         };
         enum Flag : byte {
             NAMESPACE       = 0b10000000,
