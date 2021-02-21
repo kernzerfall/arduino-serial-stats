@@ -1,67 +1,69 @@
-#include<LiquidCrystal.h>
+#include <LiquidCrystal.h>
+#include "./include/SerialConstant.hpp"
+#include "./include/Datatypes.hpp"
 
 #define REDRAW_INTERVAL             600000
-#define DISPLAY_UPDATE_INTERVAL     100
 #define TEMP_UPDATE_INTERVAL        100
 #define TEMP_AVERAGE_COUNT          100       
-#define SERIAL_DATA_PACKET_LENGTH   6
+#define TEMP_SENSOR_CALIB_VALUE     0.437528f
 
 LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
-uint8_t serial[6]; // Data packet format = [hour, minute, day, month, cpu%, ram%]
-float temperatureReading = 0.0f;
-uint16_t temperatureN = 0;
-uint64_t lastRedrawMillis = 0, lastDisplayUpdateMillis = 0, lastTemperatureReadMillis = 0, currentMillis = 0;
+class StateKeeper {
+    public:
+        byte buf[SerialConstant::Data::SIZE_SERIALBUF] = {0x00};
+        byte state          = SerialConstant::State::IDLE;
+        byte next           = SerialConstant::State::IDLE;
+        byte bIndex         = 0x00;
 
+        struct timekeep_s {
+            u64 redraw     = 0, 
+                tempRead   = 0, 
+                curr       = 0;
+        } timekeep;
+
+        struct temp_s {
+            f32 reading    = 0.0f;
+            u16 divisor    = 0;
+            cf32 adjust    = TEMP_SENSOR_CALIB_VALUE;
+        } temp;
+
+        void resetBuf(){
+            for(u16 i = 0; i < SerialConstant::Data::SIZE_SERIALBUF; i++) s.buf[i] = 0x00;
+            s.bIndex = 0x00;
+            s.state  = SerialConstant::State::IDLE;
+        }
+} s;
+
+// Resets the device
+void (*resetDevice)(void) = 0;
 
 // Blanks num blocks starting at col, row and returns the cursor to col, row
-void lBlank(uint8_t col, uint8_t row, uint8_t num){
+void lBlank(byte col, byte row, byte num){
     lcd.setCursor(col,row);
     if(col + num > 15) num = 15 - col; 
-    for(uint8_t i = 0; i<num; ++i)
+    for(byte i = 0; i<num; ++i)
         lcd.write(" ");
     lcd.setCursor(col,row);
 }
 
+// Draws some basic elements
 void drawBaseElements(){
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("CPU");
-    lcd.setCursor(8, 0);
-    lcd.print("RAM");
+    lcd.print("C");
+    lcd.setCursor(6, 0);
+    lcd.print("R");
 }
 
-void setup(){
-    Serial.begin(9600);
-    memset(&serial, 0, SERIAL_DATA_PACKET_LENGTH);
-    delay(1000);
-    lcd.begin(16,2);
-    delay(1000);
-    drawBaseElements();
-
-    // Temperature sensor
-    pinMode(A0,INPUT);
-}
-
-void loop(){
-    // Redrau UI every REDRAW_INTERVAL secs
-    currentMillis = millis();
-    if(currentMillis - lastRedrawMillis > REDRAW_INTERVAL){
-        lastRedrawMillis = currentMillis;
-        drawBaseElements();
-    }
-
-    // Data packets should always be SERIAL_DATA_PACKET_LENGTH long
-    if(Serial.available() == SERIAL_DATA_PACKET_LENGTH){
-        Serial.readBytes(serial, SERIAL_DATA_PACKET_LENGTH);
-    }
-
-    if(currentMillis - lastDisplayUpdateMillis > DISPLAY_UPDATE_INTERVAL){
-        // Reset millis since (l)ast (d)isplay (u)pdate
-        lastDisplayUpdateMillis = currentMillis;
-
+// Date&Time handler for serial data
+// Needs s.buf[0] = HOURS
+//            [1] = MINS
+//            [2] = DAY
+//            [3] = MONTH
+void handleDateTime(){
         // ==== HOURS ==== //
-        uint8_t temp = (uint8_t)serial[0];
+        byte temp = s.buf[0];
         // Blank time display
         lBlank(0,1,5);
         // If hours < 10, add preceding zero
@@ -73,14 +75,14 @@ void loop(){
 
         // ==== MINS ==== //
         // Cursor should already be after the separator
-        temp = serial[1];
+        temp = s.buf[1];
         // If mins < 10, add preceding zero
         if(temp<10)
             lcd.print(0);
         lcd.print(temp);
 
         // ==== DAY ==== //
-        temp = serial[2];
+        temp = s.buf[2];
         lcd.setCursor(6, 1);
         // If day < 10, add preceding zero
         if(temp<10)
@@ -90,49 +92,125 @@ void loop(){
 
         // ==== MONTH ==== //
         // Cursor should already be after the separator
-        temp = serial[3];
+        temp = s.buf[3];
         // If month < 10, add preceding zero
         if(temp<10)
             lcd.print("0");
         lcd.print(temp);
+        
+}
 
+// CPU Utilization handler for serial data
+// Needs s.buf[0] = CPU%
+void handleCPUtil(){
         // Blank CPU% Range
-        lBlank(4, 0, 4);
+        lBlank(2, 0, 4);
         // Write CPU%
-        lcd.print(serial[4]);
+        lcd.print(s.buf[0]);
         lcd.print("%");
+}
 
+// RAM Utilization handler for serial data
+// Needs s.buf[0] = RAM%
+void handleRAMUtil(){
         // Blank RAM% Range
-        lBlank(12,0,4);
+        lBlank(8,0,4);
         // Write RAM%
-        lcd.print(serial[5]);
-        lcd.print("%");
+        lcd.print(s.buf[0]);
+        lcd.print("%");  
+}
+
+
+void setup(){
+    Serial.begin(9600);
+    delay(1000);
+    lcd.begin(16,2);
+    delay(1000);
+    drawBaseElements();
+
+    // Temperature sensor
+    pinMode(A0,INPUT);
+}
+
+void loop(){
+    // Redrau UI every REDRAW_INTERVAL secs
+    s.timekeep.curr = millis();
+    if(s.timekeep.curr - s.timekeep.redraw > REDRAW_INTERVAL){
+        s.timekeep.redraw = s.timekeep.curr;
+        drawBaseElements();
     }
 
-    if(currentMillis - lastTemperatureReadMillis > TEMP_UPDATE_INTERVAL){
-        lastTemperatureReadMillis = currentMillis;
-        float temp = analogRead(A0);
+    if(Serial.available() > 0){
+        // If at DATA_START, don't read next byte / if done, 1 byte gets skipped
+        // If next is HALT, preserve it for the switch
+        if(s.next != SerialConstant::Flag::DATA_START && s.next != SerialConstant::State::HALT) 
+            s.next = Serial.read();
+
+        switch(s.next){
+            case SerialConstant::Flag::DATA_START:
+                // Don't mess up the state if next byte isn't available yet
+                if(Serial.available() > 0)
+                    s.next = s.state = Serial.read();
+                 break;;
+
+            case SerialConstant::Flag::DATA_END:
+                // If END of DataPacket found, find the appropriate handler for the data
+                switch(s.state){ 
+                    case SerialConstant::Data::TYPE_DATETIME: 
+                        handleDateTime(); break;;
+                    case SerialConstant::Data::TYPE_CPUTIL:
+                        handleCPUtil(); break;;
+                    case SerialConstant::Data::TYPE_RAMUTIL:
+                        handleRAMUtil(); break;;
+                }
+                s.resetBuf();
+                break;;
+
+            case SerialConstant::Flag::HALT:
+                // Reset the device via software (send HALT byte)
+                resetDevice();
+                break;;
+
+            default: {
+                // If not at IDLE push back the next serial byte in the array
+                if(s.state != SerialConstant::State::IDLE){
+                // Overflow detection
+                    if(s.bIndex > SerialConstant::Data::SIZE_SERIALBUF - 1 ){
+                        s.bIndex = 0;
+                        // Reset if overflown
+                        s.next = SerialConstant::State::HALT;
+                    }
+                    s.buf[s.bIndex++] = s.next;
+                }
+            }
+        }
+    }
+
+    if(s.timekeep.curr - s.timekeep.tempRead > TEMP_UPDATE_INTERVAL){
+        s.timekeep.tempRead = s.timekeep.curr;
+        f32 temp = analogRead(A0);
         if ( temp > 0 && temp < 140 ) 
-            temperatureReading += temp;
-        else { // if we don't read a valid temp, report immediately that the sersor is kaputt
+            s.temp.reading += temp;
+        else { 
+            // if we don't read a valid temp, report immediately that the sersor is kaputt
             // Blank TEMP Range
             lBlank(12,1,4);
             // Write Na
             lcd.print("N/A");
         }
         
-        if (temperatureN++ >= TEMP_AVERAGE_COUNT){
+        if (s.temp.divisor++ >= TEMP_AVERAGE_COUNT){
             // Blank TEMP Range
             lBlank(12,1,4);
-            float temp = temperatureReading * 0.437528f / temperatureN;
+            f32 temp = s.temp.reading * s.temp.adjust / s.temp.divisor;
             // Round to 1st digit after floating point
             temp = floor(temp*10.0f + 0.5f) / 10.0f;
             // Print temp
             lcd.print(temp);
             // Reset Counter
-            temperatureN = 0;
+            s.temp.divisor = 0;
             // Reset temperatureReading
-            temperatureReading = 0;
+            s.temp.reading = 0;
         }
     }
 }
