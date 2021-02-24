@@ -16,13 +16,13 @@ class StateKeeper {
         byte next           = SerialConstant::State::IDLE;
         byte bIndex         = 0x00;
 
-        struct timekeep_s {
+        struct Timekeep_S {
             u64 redraw     = 0, 
                 tempRead   = 0, 
                 curr       = 0;
         } timekeep;
 
-        struct temp_s {
+        struct Temperature_S {
             f32 reading    = 0.0f;
             u16 divisor    = 0;
             cf32 adjust    = TEMP_SENSOR_CALIB_VALUE;
