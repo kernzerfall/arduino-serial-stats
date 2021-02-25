@@ -53,7 +53,6 @@ auto printData(std::vector<byte> data, std::string prepend = ""){
 
 // Note: buildCPUtilPacket blocks the thread for 1 second
 auto buildCPUtilPacket() -> std::vector<byte> {
-	// PROCURE CPUINFO
 	byte cputil = Resources::getCPUtil();
 	return std::vector<byte> {
 		SerialConstant::Flag::DATA_START,
