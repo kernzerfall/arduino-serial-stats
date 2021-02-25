@@ -18,30 +18,25 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
             "forcedInclude": [
-                "C:/arduino/hardware/arduino/avr/cores/arduino/Arduino.h",
-                "C:\\arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Arduino.h"
             ]
         },
         {
             "name": "Linux",
             "includePath": [
-                "/home/kernzerfall/Desktop/arduino-1.8.13/tools/**",
-                "/home/kernzerfall/Arduino/libraries/**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/libraries/**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/tools/**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/arduino/avr/**",
+                "/mnt/c/arduino/tools/**",
+                "/mnt/c/arduino/libraries/**",
+                "/mnt/c/arduino/hardware/arduino/avr/**",
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "USBCON"
+                "USBCON",
+                "__WIN32_WINNT=0x601"
             ],
             "compilerPath": "E:/MinGW/bin/g++.exe",
             "cStandard": "c18",
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
             "forcedInclude": [
-                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/arduino/avr/cores/arduino/Arduino.h"
             ]
         }
     ],
