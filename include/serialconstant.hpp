@@ -1,5 +1,5 @@
 #pragma once
-#include "Datatypes.hpp"
+#include "datatypes.hpp"
 
 namespace SerialConstant {
 	enum State : byte {
