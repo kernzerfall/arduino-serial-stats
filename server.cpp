@@ -5,12 +5,12 @@
 #include<signal.h>
 
 // Shared headers
-#include<datatypes.hpp>
-#include<serialconstant.hpp>
+#include"datatypes.hpp"
+#include"serialconstant.hpp"
 
 // External libraries
-#include<resources.hpp>
-#include<rs232.h>
+#include"resources.hpp"
+#include"rs232.h"
 
 #ifdef __WIN32 
 #define SLEEP(x) Sleep(x)
@@ -45,7 +45,7 @@ auto buildTimePacket() -> std::vector<byte> {
 }
 
 auto printData(std::vector<byte> data, std::string prepend = ""){
-	std::cout << prepend << "[\x20";
+	std::cout << prepend << ((prepend.size())!=0?"\x20":"") << "[\x20";
 	for(byte c: data)
 		printf("0x%02x, ", c);
 	std::cout<<"\b\b\x20]\n";

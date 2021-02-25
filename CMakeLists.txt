@@ -8,7 +8,7 @@ if(WIN32)
 	add_compile_definitions(_WIN32_WINNT=0x601)
 endif()
 
-project(assess)
+project(ArduSerialStatsServer)
 
 include_directories(
 	"${PROJECT_SOURCE_DIR}/include/"
