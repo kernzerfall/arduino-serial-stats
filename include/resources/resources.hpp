@@ -14,5 +14,4 @@
 namespace Resources {
 	byte getCPUtil();
 	byte getRAMUtil();
-	f32 floor(f32);
 };

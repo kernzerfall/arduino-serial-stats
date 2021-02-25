@@ -1,15 +1,7 @@
 // CPU Load Percent (Credit to Jeremy Friesner): https://stackoverflow.com/questions/23143693/retrieving-cpu-load-percent-total-in-windows-with-c
 #include <resources.hpp>
 
-f32 Resources::floor(f32 x){
-	s64 o = (s64)trunc(10.0f*x);
-	o = o - (o % 10);
-	f32 k = ((float)o)/10.0f;
-	return k;
-}
-
 #ifdef _WIN32
-#include <Windows.h>
 static f32 CalculateCPULoad(u64 idleTicks, u64 totalTicks){
 	static u64 _previousTotalTicks = 0;
 	static u64 _previousIdleTicks = 0;
