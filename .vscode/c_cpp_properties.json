@@ -21,7 +21,7 @@
             ]
         },
         {
-            "name": "Linux",
+            "name": "WSL",
             "includePath": [
                 "/mnt/c/arduino/tools/**",
                 "/mnt/c/arduino/libraries/**",
