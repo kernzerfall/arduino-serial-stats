@@ -9,12 +9,7 @@
                 "C:/arduino/hardware/arduino/avr/**",
                 "${workspaceFolder}/**",
                 "C:\\arduino\\hardware\\arduino\\avr\\**",
-                "C:\\arduino\\tools\\**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/arduino/avr/**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/hardware/tools/**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/libraries/**",
-                "/home/kernzerfall/Arduino/libraries/**",
-                "/home/kernzerfall/Desktop/arduino-1.8.13/tools/**"
+                "C:\\arduino\\tools\\**"
             ],
             "defines": [
                 "USBCON"
@@ -41,7 +36,7 @@
             "defines": [
                 "USBCON"
             ],
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "E:/MinGW/bin/g++.exe",
             "cStandard": "c18",
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
