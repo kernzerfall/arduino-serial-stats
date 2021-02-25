@@ -27,7 +27,7 @@ namespace Except {
 	class MalformedPacket	: public std::exception {};
 };
 
-bool dbgprint = true;
+bool dbgprint = false;
 int arduinoPort = -1;
 
 auto buildTimePacket() -> std::vector<byte> {
@@ -111,6 +111,8 @@ auto main(int argc, char** argv) -> int {
 	if(arduinoPort == -1) FERR("Port not found\n")
 	if(RS232_OpenComport(arduinoPort, 9600, "8N1", 0)) 
 		FERR("Couldn't open serial port\n");
+
+	dbgprint = !(std::getenv("ARD_DBG") == NULL);
 	SLEEP(7000);
 	
 	int errorCycles = 0;
