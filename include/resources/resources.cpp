@@ -1,9 +1,9 @@
 #include <resources.hpp>
 
 #ifdef _WIN32
-/* 	CPU Load Percent START																			 *\
-|*	Credit: Jeremy Friesner																			 *|
-\*	https://stackoverflow.com/questions/23143693/retrieving-cpu-load-percent-total-in-windows-with-c */
+/*  CPU Load Percent START                                                                           *\
+|*  Credit: Jeremy Friesner                                                                          *|
+\*  https://stackoverflow.com/questions/23143693/retrieving-cpu-load-percent-total-in-windows-with-c */
 namespace jfriesner_stackoverflow {
 	static f32 calculateCPULoad(u64 idleTicks, u64 totalTicks){
 		static u64 _pTotalTicks = 0;
@@ -52,6 +52,7 @@ unsigned char Resources::getRAMUtil(){
 }
 
 #else
+// TODO: Implement linux resource monitoring funcs!
 byte Resources::getCPUtil(){
 	// read 1st val /proc/loadavg
 	// *100/no of cpuc

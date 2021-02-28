@@ -1,5 +1,5 @@
-/* This header contains some datatype definitions that are *\
-\*  commonly used in both the server and the board program */
+/*  This header contains some datatype definitions that are *\
+\*  commonly used in both the server and the board program  */
 
 #pragma once
 

@@ -1,6 +1,6 @@
-/* 	   This header contains some constants that are used	 *\
-|* during the serial communication between server and client *|
-\* 			to distinguish and parse data packets			 */
+/*     This header contains some constants that are used     *\
+|*       during the serial communication between server      *|
+\*      and client to distinguish and parse data packets     */
 
 
 #pragma once
