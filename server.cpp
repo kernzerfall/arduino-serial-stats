@@ -105,7 +105,9 @@ void signalHandler(int signum){
 
 
 auto main(int argc, char** argv) -> int {
-	signal(SIGINT, signalHandler);
+	for(int i: std::vector<int>{ 2, 3, 9, 15, 22 })
+		signal(i, signalHandler);
+		
 	if(argc != 2) FERR("Incorrect argc\n")
 	arduinoPort = RS232_GetPortnr(argv[1]);
 	if(arduinoPort == -1) FERR("Port not found\n")
@@ -115,13 +117,13 @@ auto main(int argc, char** argv) -> int {
 	dbgprint = !(std::getenv("ARD_DBG") == NULL);
 	SLEEP(7000);
 	
-	int errorCycles = 0;
-	int errCC = 0;
+	u64 errorCycles = 0;
 	while(1){
-		errCC = 0;
 		std::vector<byte> sBuf;
 		try {
 			for(byte b: buildTimePacket()) sBuf.push_back(b);
+			// buildCPUtilPacket hangs the thread for 1 second
+			// Taken advantage of in order to time the loop
 			for(byte b: buildCPUtilPacket()) sBuf.push_back(b);
 			for(byte b: buildRAMUtilPacket()) sBuf.push_back(b);
 		} catch (std::exception e) {
@@ -129,10 +131,8 @@ auto main(int argc, char** argv) -> int {
 			errorCycles++;
 			continue;
 		}
-
-		errCC += sendData(sBuf);
 		
-		if(errCC != 0) errorCycles++;
+		if(sendData(sBuf)) errorCycles++;
 		else errorCycles = 0;
 
 		if(errorCycles > 2){
