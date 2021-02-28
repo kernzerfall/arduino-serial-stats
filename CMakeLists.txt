@@ -3,7 +3,7 @@ SET(CMAKE_CXX_STANDARD 20)
 SET(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 SET(CMAKE_BUILD_TYPE MinSizeRel)
 
-if(WIN32)
+if(MINGW)
 	# 0x601 = _WIN32_WINNT_WIN7, see sdkddver.h
 	add_compile_definitions(_WIN32_WINNT=0x601)
 	SET(CMAKE_EXE_LINKER_FLAGS "-Wl,-allow-multiple-definition")
