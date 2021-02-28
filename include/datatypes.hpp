@@ -1,3 +1,6 @@
+/* This header contains some datatype definitions that are *\
+\*  commonly used in both the server and the board program */
+
 #pragma once
 
 using byte = unsigned char;
