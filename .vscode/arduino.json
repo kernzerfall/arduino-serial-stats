@@ -1,6 +1,6 @@
 {
     "board": "arduino:avr:uno",
     "programmer": "AVRISP mkII",
-    "sketch": "serialDisplay.ino",
+    "sketch": "client.ino",
     "port": "COM4"
 }

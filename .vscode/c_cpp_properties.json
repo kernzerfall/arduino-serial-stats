@@ -18,10 +18,11 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
             "forcedInclude": [
+                "C:\\arduino\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
             ]
         },
         {
-            "name": "Linux",
+            "name": "WSL",
             "includePath": [
                 "/mnt/c/arduino/tools/**",
                 "/mnt/c/arduino/libraries/**",
@@ -36,8 +37,7 @@
             "cStandard": "c18",
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
-            "forcedInclude": [
-            ]
+            "forcedInclude": []
         }
     ],
     "version": 4

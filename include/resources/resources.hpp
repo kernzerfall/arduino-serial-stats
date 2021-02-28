@@ -1,5 +1,7 @@
 #pragma once
 
+#define CPU_LOAD_INTERVAL 1000 // millis
+
 #include <datatypes.hpp>
 #include <exception>
 #include <cmath>
@@ -9,16 +11,14 @@
 #include <ctime>
 #else
 #include <fstream>
-#endif
-
-#ifdef __WIN32
-static f32 CalculateCPULoad(u64 idleTicks, u64 totalTicks);
-static u64 FileTimeToInt64(const FILETIME &ft);
-f32 GetCPULoad();
+#include <sstream>
+#include <iostream>
+#include <memory>
+#include <unistd.h>
+#include <sys/sysinfo.h>
 #endif
 
 namespace Resources {
 	byte getCPUtil();
 	byte getRAMUtil();
-	f32 floor(f32);
 };
