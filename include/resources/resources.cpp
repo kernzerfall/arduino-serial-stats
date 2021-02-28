@@ -31,7 +31,7 @@ f32 GetCPULoad(){
 	return GetSystemTimes(&idleTime, &kernelTime, &userTime) ? CalculateCPULoad(FileTimeToInt64(idleTime), FileTimeToInt64(kernelTime)+FileTimeToInt64(userTime)) : -1.0f;
 	#endif
 }
-/* 	CPU Load Percent STOP	 *\
+/* 	CPU Load Percent END	 *\
 \*	Credit: Jeremy Friesner	 */
 
 using namespace std;
