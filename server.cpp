@@ -154,12 +154,11 @@ auto main(int argc, char** argv) -> int {
 	// SIGKILL = 9 (Not produced under Windows NT)
 	// SIGTERM = 15
 	// SIGABRT = 22
-	for(int i: std::vector<int>{ 2, 3, 9, 15, 22 })
-		signal(i, signalHandler);
+	for(int i: std::vector<int>{ 2, 3, 9, 15, 22 }) signal(i, signalHandler);
 
 	// Program must have only 1 argument
 	// The name of the COMPort to connect to	
-	if(argc != 2) FATAL("Incorrect argc")
+	if(argc != 2) FATAL("Incorrect argc");
 
 	// Try to find the port from argv[1]
 	arduinoPort = RS232_GetPortnr(argv[1]);
