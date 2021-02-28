@@ -1,3 +1,4 @@
+#ifndef ARDUINO
 #include<iostream>
 #include<ctime>
 #include<vector>
@@ -46,7 +47,7 @@ auto buildTimePacket() -> std::vector<byte> {
 		// Set Header flags
 		// These tell the Arduino where the packet starts and what it contains
 		SerialConstant::Flag::DATA_START,
-		SerialConstant::Data::TYPE_DATETIME,
+		SerialConstant::Data::DATETIME,
 		// TimePackets' body should always be in this form
 		//		tp[2] = HOUR
 		//		  [3] = MIN
@@ -70,7 +71,7 @@ auto buildCPUtilPacket() -> std::vector<byte> {
 		// Set Header flags
 		// These tell the Arduino where the packet starts and what it contains
 		SerialConstant::Flag::DATA_START,
-		SerialConstant::Data::TYPE_CPUTIL,
+		SerialConstant::Data::CPUTIL,
 		// This should only contain the CPU Utilization in (0-100)%
 		cputil,
 		// Set packet end flag
@@ -84,7 +85,7 @@ auto buildRAMUtilPacket() -> std::vector<byte> {
 		// Set Header flags
 		// These tell the Arduino where the packet starts and what it contains
 		SerialConstant::Flag::DATA_START,
-		SerialConstant::Data::TYPE_RAMUTIL,
+		SerialConstant::Data::RAMUTIL,
 		// This should only contain the RAM Utilization in (0-100)%
 		ramutil,
 		// Set packet end flag
@@ -104,7 +105,7 @@ auto sendData(std::vector<byte> data) -> int {
 	const u64 s = data.size();
 
 	// Check if the packet is bigger than the buffer size
-	if(s < 4 || s > SerialConstant::Data::SIZE_SERIALBUF + 3)
+	if(s < 4 || s > SerialConstant::Size::SERIALBUF + 3)
 		throw new Except::BufferOverflow();
 
 	// Check if packet contains start and end flags
@@ -214,3 +215,4 @@ auto main(int argc, char** argv) -> int {
 	return EXIT_FAILURE;
 
 }
+#endif

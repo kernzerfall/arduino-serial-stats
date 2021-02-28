@@ -19,16 +19,17 @@ namespace SerialConstant {
 	};
     enum Data : byte {
 		// Define data types
-		TYPE_DATETIME   = 0b10010000, // 0x10 | NS
-		TYPE_CPUTIL     = 0b10010001, // 0x11 | NS
-		TYPE_RAMUTIL    = 0b10010010, // 0x12 | NS
+		DATETIME		= 0b10010000, // 0x10 | NS
+		CPUTIL			= 0b10010001, // 0x11 | NS
+		RAMUTIL    		= 0b10010010, // 0x12 | NS
+	};
 
-		// Data type lengths
-		SIZE_DATETIME   = 0b00000100, // 0x04
-		SIZE_CPUTIL     = 0b00000001, // 0x01
-		SIZE_RAMUTIL    = 0b00000001, // 0x01
+	// Define preset sizes
+	enum Size : byte {
+		SDATETIME		= 0x04,
+		SCPUTIL 		= 0x01,
+		SRAMUTIL		= 0x01,
 
-		// The size of the serial buffer
-		SIZE_SERIALBUF  = 0x40        // 64 bytes
+		SERIALBUF		= 0x40 // 64 bytes
 	};
 };

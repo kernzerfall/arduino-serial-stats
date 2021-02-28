@@ -12,7 +12,7 @@ LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
 class StateKeeper {
 	public:
-		byte buf[SerialConstant::Data::SIZE_SERIALBUF] = {0x00};
+		byte buf[SerialConstant::Size::SERIALBUF] = {0x00};
 		byte state          = SerialConstant::State::IDLE;
 		byte next           = SerialConstant::State::IDLE;
 		byte bIndex         = 0x00;
@@ -30,7 +30,7 @@ class StateKeeper {
 		} temp;
 
 		void resetBuf(){
-			for(u16 i = 0; i < SerialConstant::Data::SIZE_SERIALBUF; i++) this->buf[i] = 0x00;
+			for(u16 i = 0; i < SerialConstant::Size::SERIALBUF; i++) this->buf[i] = 0x00;
 			this->bIndex = 0x00;
 			this->state  = SerialConstant::State::IDLE;
 		}
@@ -157,11 +157,11 @@ void loop(){
 			case SerialConstant::Flag::DATA_END:
 				// If END of DataPacket found, find the appropriate handler for the data
 				switch(s.state){ 
-					case SerialConstant::Data::TYPE_DATETIME: 
+					case SerialConstant::Data::DATETIME: 
 						handleDateTime(); break;;
-					case SerialConstant::Data::TYPE_CPUTIL:
+					case SerialConstant::Data::CPUTIL:
 						handleCPUtil(); break;;
-					case SerialConstant::Data::TYPE_RAMUTIL:
+					case SerialConstant::Data::RAMUTIL:
 						handleRAMUtil(); break;;
 				}
 				s.resetBuf();
@@ -176,7 +176,7 @@ void loop(){
 				// If not at IDLE push back the next serial byte in the array
 				if(s.state != SerialConstant::State::IDLE){
 				// Overflow detection
-					if(s.bIndex > SerialConstant::Data::SIZE_SERIALBUF - 1 ){
+					if(s.bIndex > SerialConstant::Size::SERIALBUF - 1 ){
 						s.bIndex = 0;
 						// Reset if overflown
 						s.next = SerialConstant::State::HALT;
