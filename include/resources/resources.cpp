@@ -38,27 +38,53 @@ using namespace std;
 unsigned char Resources::getCPUtil(){
 	auto util = jfriesner_stackoverflow::getCPULoad();
 	if(util < 0) throw new std::exception();
-	Sleep(1000);
+	Sleep(CPU_LOAD_INTERVAL);
 	util = jfriesner_stackoverflow::getCPULoad();
 	if(util < 0 || util > 1.0f) throw new std::exception();
-	return (unsigned char)(floor(util*100.0f+0.5));	
+	return static_cast<unsigned char>((floor(util*100.0f+0.5f)));	
 }
 
 unsigned char Resources::getRAMUtil(){
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof(statex);
 	GlobalMemoryStatusEx(&statex);
-	return (unsigned char)statex.dwMemoryLoad;
+	return static_cast<unsigned char>(statex.dwMemoryLoad);
 }
 
 #else
-// TODO: Implement linux resource monitoring funcs!
+
 byte Resources::getCPUtil(){
-	// read 1st val /proc/loadavg
-	// *100/no of cpuc
-	return 0xfe;
+	std::ifstream stat;
+	std::string line;
+
+	s64 total = 0.0f;
+	s64 work = 0.0f;
+	for(s16 i = 0; i < 2; ++i){
+		stat.open("/proc/stat");
+		while(std::getline(stat, line)){
+			if(line.substr(0,3).find("cpu") != std::string::npos){
+				line = line.substr(line.find_first_of(" ")+1);
+				std::istringstream iss(line);
+				s64 curr;
+				for(u16 j = 0; iss>>curr; j++){
+					if(j<3) work += ((i==0)?(-1):(1)) * curr;
+					total += ((i==0)?(-1):(1)) * curr;
+				}
+				// if cpu line found, no need to parse the rest of the file
+				break;
+			} else continue;
+		}
+		stat.close();
+		usleep(CPU_LOAD_INTERVAL * 1e+3);
+	}
+
+	f32 res = floor((f32)(work) / (f32)(total) * 100.0f + 0.5f);
+	return static_cast<byte>(res);
 }
 byte Resources::getRAMUtil(){
-	return 0xfe;
+	struct sysinfo si;
+	sysinfo(&si);
+	f32 ramutil = floor((f32)(si.totalram-si.freeram)/(f32)si.totalram * 100.0f + 0.5f);
+	return static_cast<byte>(ramutil);
 }
 #endif

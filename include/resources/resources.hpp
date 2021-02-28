@@ -1,5 +1,7 @@
 #pragma once
 
+#define CPU_LOAD_INTERVAL 1000 // millis
+
 #include <datatypes.hpp>
 #include <exception>
 #include <cmath>
@@ -9,6 +11,11 @@
 #include <ctime>
 #else
 #include <fstream>
+#include <sstream>
+#include <iostream>
+#include <memory>
+#include <unistd.h>
+#include <sys/sysinfo.h>
 #endif
 
 namespace Resources {

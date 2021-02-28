@@ -16,7 +16,8 @@
 #ifdef __WIN32 
 #define SLEEP(x) Sleep(x)
 #else
-#define SLEEP(x) usleep(x/1e+3)
+#include <unistd.h>
+#define SLEEP(x) usleep(x*1e+3)
 #endif
 
 // Dump a vector<byte>'s contents if dbgprint is set
