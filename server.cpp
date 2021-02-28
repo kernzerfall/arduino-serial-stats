@@ -62,13 +62,6 @@ auto buildTimePacket() -> std::vector<byte> {
 	};
 }
 
-auto printData(std::vector<byte> data, std::string prepend = ""){
-	std::cout << prepend << ((prepend.size())!=0?"\x20":"") << "[\x20";
-	for(byte c: data)
-		printf("0x%02x, ", c);
-	std::cout<<"\b\b\x20]\n";
-}
-
 // Does what it says
 auto buildCPUtilPacket() -> std::vector<byte> {
 	// Note: this blocks the thread for 1 second
@@ -97,6 +90,13 @@ auto buildRAMUtilPacket() -> std::vector<byte> {
 		// Set packet end flag
 		SerialConstant::Flag::DATA_END
 	};
+}
+
+auto printData(std::vector<byte> data, std::string prepend = ""){
+	std::cout << prepend << ((prepend.size())!=0?"\x20":"") << "[\x20";
+	for(byte c: data)
+		printf("0x%02x, ", c);
+	std::cout<<"\b\b\x20]\n";
 }
 
 auto sendData(std::vector<byte> data) -> int {
