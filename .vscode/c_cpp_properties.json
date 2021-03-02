@@ -38,6 +38,23 @@
             "cppStandard": "c++20",
             "intelliSenseMode": "clang-x64",
             "forcedInclude": []
+        },
+        {
+            "name": "Linux",
+            "includePath": [
+                "/home/kernzerfall/arduino-ide/tools/**",
+                "/home/kernzerfall/arduino-ide/libraries/**",
+                "/home/kernzerfall/arduino-ide/hardware/arduino/avr/**",
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "USBCON"
+            ],
+            "compilerPath": "/usr/bin/g++",
+            "cStandard": "gnu17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "clang-x64",
+            "forcedInclude": []
         }
     ],
     "version": 4
