@@ -11,6 +11,10 @@ This is _(for now?)_ only compatible with
 
 The MSVC toolset will **not** compile this.
 
+## Libraries
+
+* RS232 under GNU GPLv3 [[gitlab](https://gitlab.com/Teuniz/RS-232)]
+
 ## Build
 
 ### Dependencies
