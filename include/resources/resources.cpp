@@ -82,9 +82,66 @@ byte Resources::getCPUtil(){
 	return static_cast<byte>(res);
 }
 byte Resources::getRAMUtil(){
-	struct sysinfo si;
-	sysinfo(&si);
-	f32 ramutil = floor((f32)(si.totalram-si.freeram)/(f32)si.totalram * 100.0f + 0.5f);
-	return static_cast<byte>(ramutil);
+	// Used to keep track of what the program is supposed to be parsing
+	enum class State { Total, Available, None };
+    State state = State::None;
+
+	// ifstream of /proc/meminfo
+    std::ifstream meminfo;
+    meminfo.open("/proc/meminfo");
+
+	// Important values will be stored here
+    s64 available = -1 , total = -1;
+
+	// Go through the file line by line
+    std::string line;
+    while(std::getline(meminfo, line)){
+		// If both needed values are set, exit the loop
+        if(available != -1 && total != -1) break;
+
+		// Try to find the semicolon
+        size_t start = line.find(":");
+        if(start != std::string::npos){
+			// If relevant info is reached, set the state
+            if		(line.find("MemTotal") != std::string::npos)
+				state = State::Total;
+            else if (line.find("MemAvailable") != std::string::npos) 	
+				state = State::Available;
+			// If the line is irrelevant, there's no need to go through
+			// the commands that follow
+            else continue;
+		// If semicolon isn't found, silently go on
+        } else continue;
+
+		// try to find the k from "kB"
+        size_t end = line.find("k");
+        if(end != std::string::npos){
+			// Calculate the length of the relevant part in the string
+            size_t span = end-start;
+
+			// Set up a stringstream and set to ignore whitespaces
+            std::istringstream num(line.substr(start, span));
+            num.ignore(1);
+
+			// Try to read the integer that *should* be on the string
+            s64 readVal;
+            if(num>>readVal){
+                switch (state){
+					// Set the appropriate variable according to the state
+                    case State::Available: available = readVal; break;;
+                    case State::Total: total = readVal; break;;
+                    default: continue; break;;
+                }
+            }
+        }
+    
+    }
+	// Calculate used ram (0.0f-100.0f)
+    f32 temp = static_cast<f32>(total-available)/static_cast<f32>(total) * 100.0f;
+	// Round to nearest integer
+	temp = floor(temp + 0.5f);
+	// Return value as byte; temp should satisfy: temp ∈ [0.0f - 100.f]
+	// Its value should fit in a byte, where ∀byte c: c ∈ [0-255]
+	return static_cast<byte>(temp);
 }
 #endif
