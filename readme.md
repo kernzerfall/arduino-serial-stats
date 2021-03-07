@@ -1,5 +1,7 @@
 # arduino-serial-stats
 
+![cmake badge](https://github.com/kernzerfall/arduino-serial-stats/actions/workflows/cmake.yml/badge.svg)
+
 Display stats from your PC on an Arduino with a 16x2 LCD
 
 ## Compatibility
